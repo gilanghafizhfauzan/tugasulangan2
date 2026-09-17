@@ -1,69 +1,95 @@
-import Image from "next/image";
+import Image from 'next/image';
+import Link from 'next/link';
+import { dataCerita } from '@/data/cerita';
 
-export default function Home() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ kategori?: string }> | { kategori?: string };
+}) {
+  const resolvedParams = await searchParams;
+  const kategori = resolvedParams?.kategori;
+
+  const isFilterActive = Boolean(kategori && kategori.toLowerCase() !== 'semua');
+
+  const produkTersaring = isFilterActive
+    ? dataCerita.filter((item) => item.kategori.toLowerCase() === kategori!.toLowerCase())
+    : dataCerita;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="space-y-8">
+      {!isFilterActive && (
+        <div className="relative overflow-hidden rounded-2xl text-white p-8 md:p-12 shadow-lg min-h-[260px] flex items-center">
+          <Image
+            src="/Image/logorvs.png"
+            alt="Banner Promo"
+            fill
+            priority
+            className="object-cover object-center -z-10"
+          />
+          <div className="absolute inset-0 bg-black/40 -z-10"></div>
+          <div className="relative z-10 max-w-xl space-y-3">
+            <div className="bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-md inline-block">
+              Koleksi Terbaru 
+            </div>
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+              Outfit & Apparel Fashion Lengkap
+            </h1>
+            <p className="text-slate-200 text-sm leading-relaxed">
+              Temukan koleksi kaos, jaket, sepatu, dan aksesoris terbaik dengan harga terjangkau.
+            </p>
+          </div>
+        </div>
+      )}
+
+      <div>
+        <h2 className="text-xl font-bold text-slate-800 mb-4">
+          {isFilterActive ? `Kategori: ${kategori}` : 'Semua Produk'}
+        </h2>
+
+        {produkTersaring.length === 0 ? (
+          <p className="text-sm text-slate-500 py-8 text-center bg-white border border-slate-200 rounded-xl">
+            Produk untuk kategori ini belum tersedia.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {produkTersaring.map((item) => (
+              <div key={item.id} className="border border-slate-200 rounded-xl p-4 flex gap-4 bg-white hover:shadow-md transition-all">
+                <div className="relative w-24 h-24 shrink-0 rounded-lg overflow-hidden bg-slate-100 border border-slate-100">
+                  <Image 
+                    src={item.gambar} 
+                    alt={item.nama} 
+                    fill
+                    className="object-cover" 
+                  />
+                </div>
+                <div className="flex flex-col justify-between flex-1">
+                  <div>
+                    <div className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md uppercase">
+                      {item.kategori}
+                    </div>
+                    <h3 className="font-bold text-sm text-slate-800 mt-1 line-clamp-1">{item.nama}</h3>
+                    <p className="text-emerald-600 font-extrabold text-sm mt-0.5">
+                      Rp {item.harga.toLocaleString('id-ID')}
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-between mt-2">
+                    <Link 
+                      href={`/cerita/${item.id}`} 
+                      className="text-xs font-semibold text-slate-500 hover:text-emerald-600"
+                    >
+                      Detail ➔
+                    </Link>
+                    <button className="text-xs bg-emerald-500 text-white font-semibold px-3 py-1.5 rounded-lg hover:bg-emerald-600 transition-colors shrink-0 ml-2">
+                      + Beli
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
