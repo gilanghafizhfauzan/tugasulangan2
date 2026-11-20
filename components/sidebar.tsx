@@ -1,45 +1,39 @@
-'use client';
-import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import Link from "next/link";
+import { ceritaList } from "@/data/cerita";
+
+const kategoriList = Array.from(new Set(ceritaList.map((c) => c.kategori)));
 
 export default function Sidebar() {
-  const searchParams = useSearchParams();
-  const currentKategori = searchParams.get('kategori') || 'semua';
-
-  const menu = [
-    { name: 'Semua Produk', slug: 'semua', },
-    { name: 'Kaos & T-Shirt', slug: 'Kaos' },
-    { name: 'Jaket & Outer', slug: 'Jaket', },
-    { name: 'Sepatu & Sneakers', slug: 'Sepatu', },
-    { name: 'Aksesoris', slug: 'Aksesoris',},
-  ];
-
   return (
-    <aside className="w-full md:w-64 shrink-0 bg-white border-r border-slate-200/80 p-4 flex flex-col">
-      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-3 py-2">
-        KATEGORI TOKO
-      </p>
-      <nav className="flex flex-col gap-1.5 mt-1">
-        {menu.map((item) => {
-          const isActive = currentKategori.toLowerCase() === item.slug.toLowerCase();
-          const href = item.slug === 'semua' ? '/' : `/?kategori=${item.slug}`;
-
-          return (
-            <Link
-              key={item.slug}
-              href={href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                isActive
-                  ? 'bg-slate-100 text-slate-900 font-bold'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-              }`}
-            >
-             
-              {item.name}
-            </Link>
-          );
-        })}
-      </nav>
+    <aside className="space-y-8">
+      <div>
+        <p className="text-xs uppercase tracking-wide text-stone-400">Kategori</p>
+        <ul className="mt-3 space-y-2 text-sm text-stone-600">
+          {kategoriList.map((k) => (
+            <li key={k}>{k}</li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <p className="text-xs uppercase tracking-wide text-stone-400">Cerita terbaru</p>
+        <ul className="mt-3 space-y-4">
+          {ceritaList.slice(0, 3).map((c) => (
+            <li key={c.id} className="flex gap-3">
+              <img
+                src={c.gambar}
+                alt=""
+                className="h-14 w-14 shrink-0 rounded-md object-cover"
+              />
+              <div>
+                <Link href={`/cerita/${c.id}`} className="text-sm text-stone-800 hover:text-teal-700">
+                  {c.judul}
+                </Link>
+                <p className="mt-1 text-xs text-stone-400">{c.tanggal}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
     </aside>
   );
 }

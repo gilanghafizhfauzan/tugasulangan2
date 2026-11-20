@@ -1,34 +1,57 @@
-import Link from 'next/link';
-import Image from 'next/image';
-import { dataCerita } from '@/data/cerita';
+import Link from "next/link";
+import { ceritaList } from "@/data/cerita";
+import Sidebar from "@/components/sidebar";
+
+function formatHarga(n: number) {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(n);
+}
 
 export default function CeritaPage() {
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-slate-800">Semua Produk</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {dataCerita.map((item) => (
-          <div key={item.id} className="border border-slate-200 rounded-xl p-4 flex gap-4 bg-white shadow-xs">
-            <div className="relative w-24 h-24 shrink-0 rounded-lg overflow-hidden bg-slate-100">
-              <Image src={item.gambar} alt={item.nama} fill className="object-cover" />
-            </div>
-            <div className="flex flex-col justify-between flex-1">
+    <section className="mx-auto max-w-6xl px-6 py-16">
+      <p className="text-sm font-medium text-teal-700">Jurnal perjalanan</p>
+      <h1 className="mt-2 font-serif text-3xl text-stone-900">Cerita & Destinasi</h1>
+      <p className="mt-3 max-w-xl text-stone-600">
+        Kumpulan cerita perjalanan sekaligus trip yang bisa langsung kamu pesan.
+      </p>
+
+      <div className="mt-10 grid gap-12 sm:grid-cols-[2fr_1fr]">
+        <div className="space-y-8">
+          {ceritaList.map((c) => (
+            <Link
+              key={c.id}
+              href={`/cerita/${c.id}`}
+              className="group flex gap-5 border-b border-stone-200 pb-8 last:border-none"
+            >
+              <img
+                src={c.gambar}
+                alt={c.lokasi}
+                className="h-28 w-40 shrink-0 rounded-lg object-cover"
+              />
               <div>
-                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md uppercase">
-                  {item.kategori}
-                </span>
-                <h3 className="font-bold text-sm text-slate-800 mt-1">{item.nama}</h3>
-                <p className="text-emerald-600 font-extrabold text-sm">
-                  Rp {item.harga.toLocaleString('id-ID')}
+                <p className="text-xs uppercase tracking-wide text-stone-400">
+                  {c.kategori} · {c.lokasi} · {c.tanggal}
+                </p>
+                <h2 className="mt-2 font-serif text-xl text-stone-900 group-hover:text-teal-700">
+                  {c.judul}
+                </h2>
+                <p className="mt-2 text-sm text-stone-600">{c.ringkasan}</p>
+                <p className="mt-2 text-sm font-semibold text-stone-900">
+                  {formatHarga(c.harga)}
+                  <span className="ml-1 text-xs font-normal text-stone-500">
+                    / orang · {c.durasi}
+                  </span>
                 </p>
               </div>
-              <Link href={`/cerita/${item.id}`} className="text-xs font-semibold text-emerald-600 hover:underline mt-2">
-                Detail ➔
-              </Link>
-            </div>
-          </div>
-        ))}
+            </Link>
+          ))}
+        </div>
+        <Sidebar />
       </div>
-    </div>
+    </section>
   );
 }
